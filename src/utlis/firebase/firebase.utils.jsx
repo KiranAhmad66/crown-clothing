@@ -18,7 +18,11 @@ const provider = new firebase.auth.GoogleAuthProvider();
 
 provider.getCustomParameters({ prompt: "selec_account" });
 export const SignInWithPopup = () => auth.signInWithPopup(provider);
-export const createUserDocumentFromAuth = async (userAuth) => {
+export const createUserDocumentFromAuth = async (
+  userAuth,
+  additionalInformation = {}
+) => {
+  if (!userAuth) return;
   const userDocRef = db.doc(`users/${userAuth.uid}`);
   const userSnapshot = await userDocRef.get();
   console.log(userSnapshot.exists);
@@ -30,6 +34,7 @@ export const createUserDocumentFromAuth = async (userAuth) => {
         displayName,
         email,
         createdAt,
+        ...additionalInformation,
       });
     } catch (error) {
       console.error(error);
@@ -38,3 +43,11 @@ export const createUserDocumentFromAuth = async (userAuth) => {
   return userDocRef;
 };
 export default firebase;
+export const CreateUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return;
+  return await auth.createUserWithEmailAndPassword(email, password);
+};
+export const SignInUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return;
+  return await auth.signInWithEmailAndPassword(email, password);
+};
